@@ -1,4 +1,4 @@
-# housingsociety
+# Shivalik City App
 
 Housing Society Management Application written in Flutter.
 
