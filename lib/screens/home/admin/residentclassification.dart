@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:housingsociety/models/user.dart';
-import 'package:housingsociety/services/database.dart';
-import 'package:housingsociety/shared/constants.dart';
-import 'package:housingsociety/shared/loading.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../models/user.dart';
+import '../../../shared/loading.dart';
+
 class ResidentClassification extends StatelessWidget {
-  final String userType;
+  final String? userType;
   ResidentClassification({this.userType});
 
   @override
@@ -29,8 +28,8 @@ class ResidentClassification extends StatelessWidget {
           return Loading();
         }
         return ListView(
-          children: snapshot.data.docs
-              .map((DocumentSnapshot<Map<String, dynamic>> document) {
+          children: snapshot.data?.docs
+              ?.map((DocumentSnapshot<Map<String, dynamic>> document) {
             return GestureDetector(
               onTap: document.id == user.uid
                   ? null
