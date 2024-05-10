@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/user.dart';
+import '../../../services/database.dart';
+import '../../../shared/constants.dart';
 import '../../../shared/loading.dart';
 
 class ResidentClassification extends StatelessWidget {
@@ -29,82 +31,87 @@ class ResidentClassification extends StatelessWidget {
         }
         return ListView(
           children: snapshot.data?.docs
-              ?.map((DocumentSnapshot<Map<String, dynamic>> document) {
-            return GestureDetector(
-              onTap: document.id == user.uid
-                  ? null
-                  : () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Wrap(
-                              children: [
-                                Container(
-                                  color: kOxfordBlue,
-                                  child: Column(
-                                    children: [
-                                      userType != 'admin' &&
-                                              userType != 'disabled'
-                                          ? ListTile(
-                                              onTap: () {
-                                                DatabaseService()
-                                                    .disableAccount(
-                                                        document.id);
-                                                Navigator.pop(context);
-                                              },
-                                              title: Text(
-                                                'Disable account',
-                                                style: TextStyle(
-                                                  color: Colors.red,
+                  .map((DocumentSnapshot<Map<String, dynamic>> document) {
+                return GestureDetector(
+                  onTap: document.id == user.uid
+                      ? null
+                      : () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Wrap(
+                                  children: [
+                                    Container(
+                                      color: kOxfordBlue,
+                                      child: Column(
+                                        children: [
+                                          userType != 'admin' &&
+                                                  userType != 'disabled'
+                                              ? ListTile(
+                                                  onTap: () {
+                                                    DatabaseService()
+                                                        .disableAccount(
+                                                            document.id);
+                                                    Navigator.pop(context);
+                                                  },
+                                                  title: Text(
+                                                    'Disable account',
+                                                    style: TextStyle(
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                )
+                                              : SizedBox(
+                                                  height: 0,
                                                 ),
-                                              ),
-                                            )
-                                          : SizedBox(
-                                              height: 0,
-                                            ),
-                                      ListTile(
-                                        onTap: () {
-                                          userType == 'disabled'
-                                              ? DatabaseService()
-                                                  .enableAccount(document.id)
-                                              : userType == 'admin'
-                                                  ? DatabaseService().setAdmin(
-                                                      document.id, 'resident')
-                                                  : DatabaseService().setAdmin(
-                                                      document.id, 'admin');
-                                          Navigator.pop(context);
-                                        },
-                                        title: userType == 'disabled'
-                                            ? Text(
-                                                'Enable Account',
-                                                style: TextStyle(
-                                                  color: kMediumAquamarine,
-                                                ),
-                                              )
-                                            : userType == 'admin'
-                                                ? Text('Remove admin')
-                                                : Text('Make admin'),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          });
-                    },
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: document.data()['profile_picture'] == ''
-                      ? AssetImage('assets/images/default_profile_pic.jpg')
-                      : NetworkImage(document.data()['profile_picture']),
-                ),
-                title: Text(document.data()['name']),
-                subtitle: Text(document.data()['wing'] +
-                    ' - ' +
-                    document.data()['flatno']),
-              ),
-            );
-          }).toList(),
+                                          ListTile(
+                                            onTap: () {
+                                              userType == 'disabled'
+                                                  ? DatabaseService()
+                                                      .enableAccount(
+                                                          document.id)
+                                                  : userType == 'admin'
+                                                      ? DatabaseService()
+                                                          .setAdmin(document.id,
+                                                              'resident')
+                                                      : DatabaseService()
+                                                          .setAdmin(document.id,
+                                                              'admin');
+                                              Navigator.pop(context);
+                                            },
+                                            title: userType == 'disabled'
+                                                ? Text(
+                                                    'Enable Account',
+                                                    style: TextStyle(
+                                                      color: kMediumAquamarine,
+                                                    ),
+                                                  )
+                                                : userType == 'admin'
+                                                    ? Text('Remove admin')
+                                                    : Text('Make admin'),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              });
+                        },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: document.data() != null &&
+                              document.data()['profile_picture'] == ''
+                          ? AssetImage('assets/images/default_profile_pic.jpg')
+                          : NetworkImage(document.data()['profile_picture']),
+                    ),
+                    title: Text(document.data()['name']),
+                    subtitle: Text(document.data()['wing'] +
+                        ' - ' +
+                        document.data()['flatno']),
+                  ),
+                );
+              }).toList() ??
+              [Container()],
         );
       },
     );
